@@ -158,11 +158,10 @@ body{
     padding: 24px 18px;
     overflow-y: auto;
     box-shadow: var(--shadow-elevated);
-    transform: translateX(105%);
+    transform: translateX(-105%);
     transition: transform 220ms ease-out;
     z-index: 50;
   }
-  html[dir="rtl"] .sidenav{ transform: translateX(-105%); }
   .sidenav.open{ transform: translateX(0); }
 
   .nav-scrim{
@@ -458,6 +457,30 @@ pre.prompt{
   padding: 30px 32px;
   scroll-margin-top: 20px;
 }
+.checklist-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+@media (max-width: 520px){
+  .checklist-head{ flex-direction: column; }
+}
+.reset-btn{
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-secondary);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
+}
+.reset-btn:hover{ background: var(--magenta-10); color: var(--color-magenta); border-color: var(--color-magenta); }
 .checklist h2{
   font-size: 22px;
   font-weight: 700;
@@ -872,8 +895,13 @@ Core Web Vitals (LCP, CLS, INP) — תסביר לי לכל תיקון למה
 
   <!-- ===================== CHECKLIST ===================== -->
   <div class="checklist" id="checklist">
-    <h2>צ'קליסט סיום</h2>
-    <p class="sub">לעשות עכשיו, על העמוד שלכם — לא בסוף השבוע</p>
+    <div class="checklist-head">
+      <div>
+        <h2>צ'קליסט סיום</h2>
+        <p class="sub">לעשות עכשיו, על העמוד שלכם — לא בסוף השבוע</p>
+      </div>
+      <button class="reset-btn" id="resetChecklist" type="button">אפס צ'קליסט</button>
+    </div>
 
     <div class="check-group">1 · נגישות</div>
     <div class="check-item"><input type="checkbox" class="box" id="c1"><label for="c1">הרצתי את פרומפט הנגישות על העמוד שלי וקיבלתי רשימת תיקונים</label></div>
@@ -952,6 +980,15 @@ if(navToggle){
   });
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') closeNav();
+  });
+}
+
+var resetBtn = document.getElementById('resetChecklist');
+if(resetBtn){
+  resetBtn.addEventListener('click', function(){
+    document.querySelectorAll('.checklist input[type="checkbox"]').forEach(function(cb){
+      cb.checked = false;
+    });
   });
 }
 
