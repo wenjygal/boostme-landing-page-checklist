@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בניתי עמוד נחיתה, מה עכשיו?</title>
+<style>
+@font-face {
+  font-family: 'Rubik';
+  src: local('Rubik');
+}
+
+/* ============ BOOST ME design tokens ============ */
+:root{
+  --color-magenta: #E0128B;
+  --color-orange:  #F68920;
+  --bg-page:       #F5F5F7;
+  --bg-card:       #FFFFFF;
+  --color-dark:    #1A1A1A;
+  --fg-secondary:  rgba(26,26,26,0.60);
+
+  --gradient-brand:    linear-gradient(135deg, #E0128B 0%, #F68920 100%);
+  --gradient-brand-90: linear-gradient(90deg, #E0128B 0%, #F68920 100%);
+
+  --magenta-10: rgba(224,18,139,0.10);
+  --magenta-15: rgba(224,18,139,0.15);
+  --magenta-20: rgba(224,18,139,0.20);
+
+  --shadow-card:     0 2px 12px rgba(0,0,0,0.08);
+  --shadow-hover:    0 6px 24px rgba(224,18,139,0.15);
+  --shadow-elevated: 0 12px 40px rgba(224,18,139,0.20);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --code-bg: #1A1A1A;
+  --code-ink: #eae4dd;
+  --code-accent: #F68920;
+
+  --warn-bg: #fff4e6;
+  --warn-line: #F68920;
+  --warn-ink: #7a4310;
+
+  --line: rgba(26,26,26,0.10);
+}
+
+:root[data-theme="dark"]{
+  --bg-page:      #17151a;
+  --bg-card:      #221f26;
+  --color-dark:   #F5F5F7;
+  --fg-secondary: rgba(245,245,247,0.62);
+  --line: rgba(245,245,247,0.12);
+  --magenta-10: rgba(224,18,139,0.16);
+  --magenta-15: rgba(224,18,139,0.22);
+  --magenta-20: rgba(224,18,139,0.28);
+  --shadow-card:     0 2px 12px rgba(0,0,0,0.35);
+  --shadow-hover:    0 6px 24px rgba(224,18,139,0.28);
+  --code-bg: #0f0d12;
+  --code-ink: #f0ece6;
+  --warn-bg: #2e2210;
+  --warn-line: #F68920;
+  --warn-ink: #ffcf8f;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-page:      #17151a;
+    --bg-card:      #221f26;
+    --color-dark:   #F5F5F7;
+    --fg-secondary: rgba(245,245,247,0.62);
+    --line: rgba(245,245,247,0.12);
+    --magenta-10: rgba(224,18,139,0.16);
+    --magenta-15: rgba(224,18,139,0.22);
+    --magenta-20: rgba(224,18,139,0.28);
+    --shadow-card:     0 2px 12px rgba(0,0,0,0.35);
+    --shadow-hover:    0 6px 24px rgba(224,18,139,0.28);
+    --code-bg: #0f0d12;
+    --code-ink: #f0ece6;
+    --warn-bg: #2e2210;
+    --warn-line: #F68920;
+    --warn-ink: #ffcf8f;
+  }
+}
+
+*{ box-sizing: border-box; }
+html, body{ margin:0; padding:0; }
+body{
+  direction: rtl;
+  background: var(--bg-page);
+  color: var(--color-dark);
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell{
+  display: grid;
+  grid-template-columns: 220px minmax(0,1fr);
+  gap: 32px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 100px;
+  align-items: start;
+}
+@media (max-width: 860px){
+  .shell{ grid-template-columns: 1fr; }
+}
+
+/* ---- Sticky side nav ---- */
+.sidenav{
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (max-width: 860px){
+  .sidenav{
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+}
+.sidenav a{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-secondary);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 150ms ease-out, color 150ms ease-out;
+}
+.sidenav a:hover{ background: var(--magenta-10); color: var(--color-magenta); }
+.sidenav a .dot{
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--fg-secondary); flex-shrink: 0;
+}
+.sidenav a[data-nav="1"] .dot, .sidenav a[data-nav="2"] .dot, .sidenav a[data-nav="3"] .dot{ background: var(--color-magenta); }
+.sidenav a[data-nav="4"] .dot{ background: var(--color-orange); }
+.sidenav .nav-label{
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--fg-secondary);
+  padding: 0 12px;
+  margin: 14px 0 2px;
+}
+.sidenav .nav-label:first-child{ margin-top: 0; }
+
+.toollinks{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.toollinks a{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-secondary);
+  text-decoration: none;
+  font-size: 12.5px;
+  transition: background 150ms ease-out, color 150ms ease-out;
+}
+.toollinks a:hover{ background: var(--magenta-10); color: var(--color-magenta); }
+.toollinks a .ext{ margin-inline-start: auto; opacity: .5; font-size: 11px; }
+
+.main{ min-width: 0; }
+
+/* ---- Header ---- */
+@property --spin-angle{
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes spin-border{
+  to{ --spin-angle: 360deg; }
+}
+.top-frame{
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  margin-bottom: 36px;
+  background: conic-gradient(from var(--spin-angle), var(--color-magenta), var(--color-orange), var(--color-magenta) 50%, var(--color-orange) 75%, var(--color-magenta));
+  animation: spin-border 7s linear infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  .top-frame{ animation: none; }
+}
+.top{
+  text-align: center;
+  padding: 26px 20px 30px;
+  border-radius: calc(var(--radius-lg) - 2px);
+  background: var(--bg-page);
+}
+.logo-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.logo-mark{
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.logo-mark img{ width: 100%; height: 100%; object-fit: contain; }
+.logo-word{ font-weight: 700; font-size: 15px; letter-spacing: .02em; }
+.eyebrow{
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: var(--color-magenta);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+h1{
+  font-size: clamp(28px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 10px 0 6px;
+  text-wrap: balance;
+}
+.sub{
+  color: var(--fg-secondary);
+  font-size: 16px;
+  max-width: 55ch;
+  margin: 0 auto;
+}
+.meta-row{
+  display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+  margin-top: 20px;
+}
+.chip{
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  color: var(--fg-secondary);
+  background: var(--bg-card);
+}
+
+/* ---- Disclaimer ---- */
+.disclaimer{
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-bottom: 44px;
+  color: var(--warn-ink);
+  font-size: 15px;
+}
+.disclaimer strong{ display:block; margin-bottom:4px; font-size: 15px;}
+
+/* ---- Section blocks ---- */
+.block{
+  margin-bottom: 56px;
+  scroll-margin-top: 20px;
+}
+.block-head{
+  display:flex; align-items:center; gap:14px;
+  margin-bottom: 20px;
+}
+.block-num{
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  background: var(--gradient-brand);
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  box-shadow: var(--shadow-card);
+}
+.block.measure .block-num{ background: linear-gradient(135deg, var(--color-orange), var(--color-magenta)); }
+.block-title{
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+.block-tag{
+  font-size: 13px;
+  color: var(--fg-secondary);
+}
+
+.topic{
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px 28px;
+  margin-bottom: 22px;
+  transition: box-shadow 200ms ease-out;
+}
+.topic h3{
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  display:flex; align-items:center; gap:8px;
+}
+.topic h3 .pill{
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  background: var(--magenta-10);
+  color: var(--color-magenta);
+  letter-spacing: .04em;
+}
+.block.measure .topic h3 .pill{ background: rgba(246,137,32,0.14); color: var(--color-orange); }
+.topic p{ margin: 8px 0; color: var(--color-dark); }
+.topic p.soft{ color: var(--fg-secondary); font-size: 14.5px; }
+
+.topic ul, .topic ol{ margin: 10px 0; padding-inline-start: 22px; }
+.topic li{ margin-bottom: 5px; }
+
+.claude-label{
+  display:flex; align-items:center; gap:8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-secondary);
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.claude-label::before{
+  content: "◆";
+  color: var(--color-magenta);
+  font-size: 9px;
+}
+.block.measure .claude-label::before{ color: var(--color-orange); }
+
+.prompt-wrap{ position: relative; }
+pre.prompt{
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border-radius: var(--radius-md);
+  padding: 16px 52px 16px 18px;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.65;
+  direction: ltr;
+  text-align: left;
+  font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+.copy-btn{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: var(--code-ink);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 150ms ease-out, transform 100ms ease-in;
+}
+.copy-btn:hover{ background: rgba(255,255,255,0.16); }
+.copy-btn:active{ transform: scale(0.93); }
+.copy-btn svg{ width: 15px; height: 15px; }
+.copy-btn.copied{ background: var(--color-orange); border-color: var(--color-orange); }
+
+/* ---- Checklist ---- */
+.checklist{
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+  padding: 30px 32px;
+  scroll-margin-top: 20px;
+}
+.checklist h2{
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.checklist .sub{ margin: 0 0 18px; text-align: right; max-width: none; }
+.check-item{
+  display:flex; align-items:flex-start; gap:12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14.5px;
+}
+.check-item:first-of-type{ border-top: none; }
+.box{
+  flex-shrink:0;
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--fg-secondary);
+  margin-top: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-card);
+  cursor: pointer;
+  position: relative;
+}
+.box:checked{
+  background: var(--gradient-brand);
+  border-color: var(--color-magenta);
+}
+.box:checked::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/70% no-repeat;
+}
+.box:focus-visible{
+  outline: 2px solid var(--color-magenta);
+  outline-offset: 2px;
+}
+.sidenav a:focus-visible,
+.toollinks a:focus-visible,
+.copy-btn:focus-visible{
+  outline: 2px solid var(--color-magenta);
+  outline-offset: 2px;
+}
+.copy-btn:focus-visible{ outline-color: var(--color-orange); }
+.check-item label{ cursor: pointer; }
+.check-group{
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #fff;
+  background: linear-gradient(90deg, #C41077, #A00C60);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin: 24px 0 6px;
+  display: inline-block;
+}
+.check-group:first-of-type{ margin-top: 4px; }
+
+footer{
+  text-align:center;
+  margin-top: 50px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  color: var(--fg-secondary);
+  font-size: 13px;
+}
+
+@media print{
+  body{ background: white; }
+  .sidenav, .copy-btn{ display: none; }
+  .shell{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="sidenav" aria-label="ניווט בין בלוקי ההדרכה">
+    <div class="nav-label" id="navlabel-law">חוק וציות</div>
+    <a href="#block-1" data-nav="1"><span class="dot" aria-hidden="true"></span>1 · נגישות</a>
+    <a href="#block-2" data-nav="1"><span class="dot" aria-hidden="true"></span>2 · פרטיות</a>
+    <a href="#block-3" data-nav="1"><span class="dot" aria-hidden="true"></span>3 · תנאי שימוש</a>
+    <div class="nav-label" id="navlabel-measure">מדידה</div>
+    <a href="#block-4" data-nav="4"><span class="dot" aria-hidden="true"></span>4 · GTM/GA4/Clarity</a>
+    <div class="nav-label" id="navlabel-summary">סיכום</div>
+    <a href="#checklist" data-nav="4"><span class="dot" aria-hidden="true"></span>צ'קליסט</a>
+
+    <div class="toollinks">
+      <div class="nav-label" id="navlabel-tools" style="margin:0 0 2px;">קישורים מהירים</div>
+      <a href="https://tagmanager.google.com" target="_blank" rel="noopener" aria-label="Tag Manager, נפתח בכרטיסייה חדשה">Tag Manager<span class="ext" aria-hidden="true">↗</span></a>
+      <a href="https://analytics.google.com" target="_blank" rel="noopener" aria-label="Analytics, נפתח בכרטיסייה חדשה">Analytics<span class="ext" aria-hidden="true">↗</span></a>
+      <a href="https://clarity.microsoft.com" target="_blank" rel="noopener" aria-label="Clarity, נפתח בכרטיסייה חדשה">Clarity<span class="ext" aria-hidden="true">↗</span></a>
+      <a href="https://search.google.com/search-console" target="_blank" rel="noopener" aria-label="Search Console, נפתח בכרטיסייה חדשה">Search Console<span class="ext" aria-hidden="true">↗</span></a>
+      <a href="https://pagespeed.web.dev" target="_blank" rel="noopener" aria-label="PageSpeed, נפתח בכרטיסייה חדשה">PageSpeed<span class="ext" aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
+
+  <div class="main">
+
+  <div class="top-frame">
+    <div class="top">
+      <div class="logo-row">
+        <div class="logo-mark"><img src="https://res.cloudinary.com/jrag9ksp/image/upload/v1784148898/BOOST%20ME/LOGOS/boostmelogo-trans.png" alt="לוגו BOOST ME"></div>
+        <div class="logo-word">BOOST ME</div>
+      </div>
+      <div class="eyebrow">הדרכת AI וכלים · 90 דקות</div>
+      <h1>בניתי עמוד נחיתה, מה עכשיו?</h1>
+      <p class="sub">מה חייב להיות בכל אתר שעולה לאוויר לקהל ישראלי — לפני שהוא באמת "גמור".</p>
+      <div class="meta-row">
+        <span class="chip">חוק וציות</span>
+        <span class="chip">מדידה ו-Analytics</span>
+        <span class="chip">פרומפטים מוכנים ל-Claude Code</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠ גילוי נאות</strong>
+    כל מה שנאמר כאן הוא לא ייעוץ משפטי. זה כיוון מעשי ופרקטי — מה שבדרך כלל נדרש ואיך מטמיעים את זה טכנית. לפני עלייה לאוויר מול לקוחות אמיתיים — עורך/ת דין צריכ/ה לעבור על הנוסח הסופי של ההצהרות.
+  </div>
+
+  <!-- ===================== BLOCK 1: ACCESSIBILITY ===================== -->
+  <div class="block" id="block-1">
+    <div class="block-head">
+      <div class="block-num">1</div>
+      <div>
+        <h2 class="block-title">נגישות</h2>
+        <div class="block-tag">חוק שוויון זכויות לאנשים עם מוגבלות · WCAG 2.1 AA</div>
+      </div>
+    </div>
+
+    <div class="topic">
+      <h3>אמל"ק <span class="pill">חוק</span></h3>
+      <p>בישראל חוק שוויון זכויות לאנשים עם מוגבלות ותקנות הנגישות מחייבות אתרים (בתנאים מסוימים, לפי היקף פעילות) לעמוד בתקן <strong>WCAG 2.1 רמה AA</strong>. גם כשאין חובה פורמלית מדויקת למקרה שלכם — זה הסטנדרט המקצועי, שיקול משפטי (תביעות נגישות נפוצות בישראל) ושיקול עסקי (יותר משתמשים = יותר לקוחות).</p>
+      <p class="soft">בפועל: ניגודיות צבעים, ניווט מקלדת מלא, alt text לתמונות, תמיכת קורא מסך (ARIA), טפסים עם labels תקינים, focus state ברור.</p>
+    </div>
+
+    <div class="topic">
+      <h3>הצהרת נגישות — מה חייב להיות בה</h3>
+      <ul>
+        <li>תאריך עדכון אחרון</li>
+        <li>רמת התאמה (בד"כ AA)</li>
+        <li>ערוץ פנייה לדיווח על בעיית נגישות + זמן מענה</li>
+        <li>שם רכז הנגישות (לפי גודל הארגון)</li>
+        <li>מה נבדק ואיך (כלי אוטומטי + בדיקה ידנית)</li>
+      </ul>
+
+      <p class="soft">⚠ שני שלבים תמיד — קודם מחקר עדכני (דרישות/סייגים/עדכוני תקנות יכולים להשתנות), רק אז בדיקה על סמך הממצאים. לא לבדוק לפי ידע כללי ישן.</p>
+
+      <div class="claude-label">שלב 1 · מחקר (עם גישה לאינטרנט)</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">חפש באינטרנט את המצב העדכני של חוק/תקנות הנגישות בישראל
+לאתרי אינטרנט (חוק שוויון זכויות לאנשים עם מוגבלות, תקנות
+נגישות שירות, תקן ת"י 5568 / WCAG).
+בדוק ספציפית:
+1. מהי הרמה הנדרשת כרגע (AA? רכיבים ספציפיים?)
+2. האם יש סייגים לפי גודל עסק/היקף פעילות
+3. עדכוני תקנות או פסיקה משמעותית בשנה האחרונה
+4. מה חייב להיכלל בהצהרת נגישות לפי הדרישה הרשמית
+
+תן לי סיכום קצר עם מקורות (קישורים), לא ניחוש מזיכרון.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <div class="claude-label">שלב 2 · בדיקה, על סמך שלב 1</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">לפי הממצאים שהבאת בשלב הקודם, בצע אודיט נגישות לעמוד הזה.
+בדוק ותקן כל סעיף שעלה כרלוונטי, ובפרט:
+1. ניגודיות צבעים (טקסט מול רקע)
+2. alt text תיאורי לכל &lt;img&gt;, אייקונים דקורטיביים עם alt=""
+3. ניווט מקלדת — כל אלמנט אינטראקטיבי נגיש ב-Tab, בסדר לוגי
+4. focus state ברור וגלוי
+5. ARIA labels על כפתורים/קישורים ללא טקסט גלוי
+6. קישורים עם טקסט תיאורי — לא "לחץ כאן"
+7. &lt;html lang="he" dir="rtl"&gt; מוגדר נכון
+8. היררכיית כותרות תקינה
+9. טפסים — כל &lt;input&gt; עם &lt;label&gt; מקושר
+
+תן לי רשימה של מה תוקן, מה דורש בדיקה ידנית, ואם משהו לא
+תואם למה שמצאת בשלב המחקר.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== BLOCK 2: PRIVACY ===================== -->
+  <div class="block" id="block-2">
+    <div class="block-head">
+      <div class="block-num">2</div>
+      <div>
+        <h2 class="block-title">פרטיות</h2>
+        <div class="block-tag">תיקון 13 לחוק הגנת הפרטיות</div>
+      </div>
+    </div>
+
+    <div class="topic">
+      <h3>אמל"ק <span class="pill">חוק</span></h3>
+      <p>תיקון 13 (בתוקף מאוגוסט 2025) החמיר משמעותית את חוק הגנת הפרטיות: הגדרות מורחבות ל"מידע אישי", חובות אבטחת מידע, סמכויות אכיפה מוגברות לרשות להגנת הפרטיות (כולל קנסות), וחובת דיווח על אירועי אבטחה חמורים.</p>
+      <p class="soft">כל אתר שאוסף מידע — גם רק Cookies או אנליטיקס, לא רק טפסים — חשוף. GA4 בפני עצמו כבר יוצר חובת הצהרה.</p>
+    </div>
+
+    <div class="topic">
+      <h3>הצהרת פרטיות — מה צריך להיות בה</h3>
+      <ul>
+        <li>אילו נתונים נאספים (שם, טלפון, מייל, התנהגות גלישה, Cookies)</li>
+        <li>למה (מטרת האיסוף)</li>
+        <li>האם מועבר לצד ג' (GA4, וואטסאפ, כלי אוטומציה)</li>
+        <li>כמה זמן נשמר המידע</li>
+        <li>זכויות המשתמש (עיון, תיקון, מחיקה) ואיך לממש</li>
+        <li>פרטי יצירת קשר לפניות בנושא פרטיות</li>
+      </ul>
+
+      <p class="soft">⚠ תיקון 13 הרחיב הגדרות וחובות — לבדוק קודם מה המצב היום, לא לבסס על ידע כללי מיושן.</p>
+
+      <div class="claude-label">שלב 1 · מחקר (עם גישה לאינטרנט)</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">חפש באינטרנט את המצב העדכני של תיקון 13 לחוק הגנת הפרטיות
+בישראל ואת הנחיות הרשות להגנת הפרטיות לגבי אתרי אינטרנט.
+בדוק ספציפית:
+1. מה נחשב "מידע אישי" בהגדרה המורחבת (Cookies/מזהי מכשיר?)
+2. חובות אבטחת מידע שחלות על אתר קטן/עסק עצמאי
+3. האם יש חובת מינוי ממונה הגנת פרטיות, ובאילו תנאים
+4. מה חייב להיכלל בהצהרת פרטיות לפי הדרישה הרשמית העדכנית
+5. חובת הסכמה מפורשת ל-Cookies (banner) ולא רק גילוי
+
+תן לי סיכום קצר עם מקורות (קישורים), לא ניחוש מזיכרון.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <div class="claude-label">שלב 2 · מיפוי בפועל, על סמך שלב 1</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">לפי הממצאים שהבאת בשלב הקודם, סרוק את הפרויקט ומצא כל מקום
+שבו נאסף מידע על משתמשים:
+1. טפסים (name attributes, input fields) — אילו שדות נאספים
+2. סקריפטים של צד ג' (GTM, GA4, פיקסלים, כלי צ'אט) — מה נאסף
+3. Cookies שנקבעים (document.cookie ו-localStorage)
+4. קריאות API חיצוניות שמעבירות מידע החוצה (webhooks, CRM)
+
+תן לי רשימה: מקור המידע → סוג המידע → יעד, ותסמן אילו דורשים
+הסכמה מפורשת לפי מה שמצאת בשלב המחקר.
+אל תנסח את ההצהרה עצמה, רק מפה את זרימת המידע בפועל.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== BLOCK 3: TERMS ===================== -->
+  <div class="block" id="block-3">
+    <div class="block-head">
+      <div class="block-num">3</div>
+      <div>
+        <h2 class="block-title">תנאי שימוש</h2>
+        <div class="block-tag">ההגנה המשפטית שלכם</div>
+      </div>
+    </div>
+
+    <div class="topic">
+      <h3>אמל"ק — למה זה קריטי</h3>
+      <p>בלי תנאי שימוש: אין הגבלת אחריות, אין קביעה מהו שימוש מותר/אסור באתר, אין סמכות שיפוט מוגדרת, ואין הגנה על קניין רוחני (תוכן, עיצוב, קוד). כשיש טופס לידים או תשלום — תנאי השימוש הם גם הבסיס למערכת היחסים המסחרית.</p>
+    </div>
+
+    <div class="topic">
+      <h3>מה כדאי שיהיה בהם</h3>
+      <ul>
+        <li>הגדרת השירות/המוצר</li>
+        <li>שימוש מותר ואסור באתר</li>
+        <li>הגבלת אחריות — במיוחד כשיש ייעוץ/תוכן מקצועי</li>
+        <li>זכויות קניין רוחני (תוכן, מיתוג, קוד)</li>
+        <li>מדיניות ביטולים/החזרים (אם יש תשלום)</li>
+        <li>סמכות שיפוט ודין חל (ישראל)</li>
+        <li>עדכון תנאים — איך מודיעים</li>
+      </ul>
+
+      <p class="soft">⚠ לבדוק קודם דרישות ספציפיות לתחום (מכירה מקוונת = זכות ביטול עסקה, ייעוץ מקצועי = חוקים ייעודיים) לפני כתיבת טיוטה גנרית.</p>
+
+      <div class="claude-label">שלב 1 · מחקר (עם גישה לאינטרנט)</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">חפש באינטרנט מה נדרש בישראל בתנאי שימוש לאתר מסוג [תארו:
+עמוד נחיתה לשירות / חנות מקוונת / שירותי ייעוץ וכו'].
+בדוק ספציפית:
+1. האם חלים חוק הגנת הצרכן וזכות ביטול עסקה (תשלום/הזמנה מרחוק)
+2. דרישות גילוי ספציפיות לתחום (ייעוץ פיננסי/משפטי/בריאות)
+3. עד כמה ניתן להגביל אחריות בישראל
+4. תקדימים או הנחיות עדכניות לתנאי שימוש באתרים ישראליים
+
+תן לי סיכום קצר עם מקורות (קישורים), לא ניחוש מזיכרון.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <div class="claude-label">שלב 2 · כתיבת הטיוטה, על סמך שלב 1</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">לפי הממצאים שהבאת בשלב הקודם, צור טיוטת דף "תנאי שימוש"
+בעברית לעמוד [שם העמוד/העסק]. כלול סעיפים ל: הגדרת השירות,
+שימוש מותר/אסור באתר, הגבלת אחריות, זכויות קניין רוחני,
+מדיניות ביטולים (אם רלוונטי לפי מה שמצאת), סמכות שיפוט
+(ישראל), יצירת קשר, ועדכון תנאים.
+
+חשוב: זו טיוטת עבודה בלבד ולא ייעוץ משפטי — סמן בבירור בראש
+הקובץ ש"טיוטה, טרם נבדקה משפטית" לפני העלאה לאוויר.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== BLOCK 4: MEASUREMENT ===================== -->
+  <div class="block measure" id="block-4">
+    <div class="block-head">
+      <div class="block-num">4</div>
+      <div>
+        <h2 class="block-title">מדידה</h2>
+        <div class="block-tag">GTM · GA4 · Microsoft Clarity</div>
+      </div>
+    </div>
+
+    <div class="topic">
+      <h3>GTM — Google Tag Manager <span class="pill">מדידה</span></h3>
+      <p>"מיכל תגיות" — מטמיעים ומנהלים את <strong>כל</strong> קודי המעקב (GA4, פיקסלים, כלים נוספים) ממקום אחד, בלי לגעת בקוד האתר בכל פעם שרוצים להוסיף מדידה.</p>
+      <p class="soft"><strong>פתיחת חשבון:</strong> tagmanager.google.com → חשבון + קונטיינר (Web) → שני קטעי קוד: אחד ל-<code>&lt;head&gt;</code>, אחד מיד אחרי <code>&lt;body&gt;</code>.</p>
+
+      <p class="soft">חיבור טכני פשוט — לא צריך פרומפט מפורט, מספיק לתת לו את המשימה ואת ה-ID:</p>
+      <div class="claude-label">מה אומרים לקלוד קוד</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">תחבר לי GTM לפרויקט, ה-ID הוא GTM-XXXXXXX</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+    </div>
+
+    <div class="topic">
+      <h3>GA4 — Google Analytics 4</h3>
+      <p>מראה כמה אנשים נכנסים, מאיפה הגיעו, מה עשו (גלילה, קליק, שליחת טופס), ואיפה נטשו. <strong>לא מתקינים ישירות בקוד</strong> — מתקינים כתג בתוך GTM, לשליטה מרכזית.</p>
+      <p class="soft"><strong>בתוך GTM:</strong> תג חדש → "Google Analytics: GA4 Configuration" → Measurement ID מ-analytics.google.com → טריגר: All Pages.</p>
+
+      <p class="soft"><strong>שלושת מושגי היסוד:</strong> <strong>Tag</strong> — הקוד שרוצים שיפעל · <strong>Trigger</strong> — מתי הוא יופעל (למשל All Pages, או קליק על כפתור) · <strong>Variable</strong> — מידע שהתג/הטריגר צריכים (Measurement ID, טקסט כפתור). תג בלי טריגר לא יופעל אף פעם.</p>
+
+      <div class="claude-label">מה אומרים לקלוד קוד — בקשת הדרכה, לא ביצוע</div>
+      <p class="soft">הקמת ה-Tag/Trigger/Variable נעשית בממשק הוובי של GTM, לא בעריכת קוד:</p>
+      <div class="prompt-wrap">
+        <pre class="prompt">תדריך אותי צעד-אחר-צעד איך להקים ב-GTM תג GA4 Configuration:
+איזה סוג תג לבחור, אילו Variables להגדיר (ה-Measurement ID
+שלי הוא [G-XXXXXXX]), ואיזה Trigger לחבר אליו כדי שיפעל בכל
+טעינת עמוד. תסביר גם איך בודקים שזה עובד דרך מצב Preview
+לפני שמפרסמים.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <p class="soft">אחרי שהתג הבסיסי חי — שווה למדוד גם קליקים על כפתורים חשובים (וואטסאפ למשל), דרך Trigger מסוג "Click - All Elements" בממשק GTM, בלי לגעת בקוד:</p>
+      <div class="prompt-wrap">
+        <pre class="prompt">תעבור על עמוד הנחיתה שלי ותציע לי מה כדאי למדוד — אילו כפתורים,
+קישורים או פעולות (קליק על וואטסאפ, שליחת טופס, גלילה לסקשן
+מסוים) הכי משמעותיים להבנת ביצועי העמוד. בשביל כל אחד, תגיד
+לי איזה Trigger להגדיר בממשק של GTM כדי למדוד אותו.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <p class="soft">💡 <strong>טיפ — דוחות אוטומטיים למייל:</strong> לא צריך להיכנס ל-GA4 כל פעם. בתוך GA4 → Reports → פותחים דוח → <strong>Share this report → Schedule email delivery</strong> — קובעים תדירות (שבועי/חודשי) ומקבלים סיכום ישירות למייל.</p>
+
+      <p class="soft">💡 <strong>איך מסתכלים על אנליטיקס בלי ללמוד לנווט בדוחות:</strong> יש ל-GA4 עוזר AI מובנה. חושבים מה רוצים לדעת ("מאיפה הגיעו הכי הרבה מבקרים החודש?" / "כמה לחצו על כפתור הוואטסאפ השבוע?") ושואלים בשפה חופשית בממשק — הוא בונה את הדוח בעצמו.</p>
+    </div>
+
+    <div class="topic">
+      <h3>MS Clarity — מפות חום</h3>
+      <p>כלי חינמי של מיקרוסופט שמראה <strong>איך</strong> אנשים בפועל משתמשים בעמוד — הקלטות מסך אנונימיות + מפות חום (איפה לוחצים, עד איפה גוללים, איפה "נתקעים"). משלים את GA4: GA4 אומר <em>מה</em> קרה, Clarity מראה <em>למה</em>.</p>
+      <p class="soft"><strong>הטמעה:</strong> clarity.microsoft.com → פרויקט חדש → <strong>Integrations → Google Tag Manager</strong> → מחברים חשבון GTM ועוקבים אחרי ההוראות. Clarity מטמיע את התג אוטומטית בתוך ה-GTM הקיים — לא צריך לגעת בקוד או בקלוד קוד בכלל.</p>
+
+      <p class="soft">💡 <strong>טיפ — מה לחפש במפת החום:</strong> אם רואים הרבה לחיצות במקום שהם <em>לא</em> אמורים ללחוץ (אלמנט שנראה ככפתור אבל לא, טקסט שמושך קליקים בלי סיבה) — זה סימן שה-UI לא ברור, לא רעש רקע להתעלם ממנו.</p>
+
+    </div>
+
+    <div class="topic">
+      <h3>בקצרה — Search Console</h3>
+      <p class="soft">כלי נוסף ששווה להכיר, לא בלוק מלא כמו GTM/GA4/Clarity.</p>
+      <p>מראה איך <strong>גוגל עצמו</strong> רואה את העמוד: אינדוקס, שגיאות סריקה, באילו חיפושים בפועל העמוד מופיע. משלים את GA4/Clarity בזווית שונה — איך גוגל מגלה ומדרג את העמוד.</p>
+      <p class="soft"><strong>איך מתחילים:</strong></p>
+      <ol>
+        <li>תחילה, נכס Search Console חייב להיות קיים ומאומת: search.google.com/search-console → הוספת נכס → אימות בעלות. שיטות אימות אפשריות: <strong>דרך GTM שכבר מותקן</strong> (מומלץ, בלי לגעת בקוד), רשומת <strong>DNS</strong>, או תג <strong>META</strong> ב-<code>&lt;head&gt;</code></li>
+        <li>אחר כך, אם יש GA4 מותקן — אפשר גם לחבר ביניהם: GA4 → Admin → Product Links → Search Console Links → Link</li>
+        <li>שיטת ה-GA4 דורשת owner מאומת ב-Search Console + עורך ב-GA4. נתונים זורמים תוך 24–48 שעות</li>
+      </ol>
+      <p class="soft">תהליך בממשק גוגל בלבד — אין צורך בפרומפט לקלוד קוד.</p>
+    </div>
+
+    <div class="topic">
+      <h3>בקצרה — Core Web Vitals</h3>
+      <p>מדדי מהירות/חוויית טעינה שגוגל משתמש בהם בפועל כגורם דירוג. בודקים ב-<a href="https://pagespeed.web.dev">pagespeed.web.dev</a>.</p>
+      <p class="soft"><strong>התהליך:</strong> נכנסים לאתר, כותבים את ה-URL, נותנים לו לסרוק, מעתיקים/מייצאים את הדוח, ונותנים אותו לקלוד קוד לתקן:</p>
+
+      <div class="claude-label">מה אומרים לקלוד קוד</div>
+      <div class="prompt-wrap">
+        <pre class="prompt">הרצתי בדיקה ב-PageSpeed Insights על העמוד וזה הדוח שהתקבל:
+[הדבק כאן את הדוח / את הממצאים העיקריים]
+
+תעבור על הממצאים ותתקן את הבעיות שמורידות את הציון של
+Core Web Vitals (LCP, CLS, INP) — תסביר לי לכל תיקון למה
+הבעיה השפיעה על הציון ומה תיקנת.</pre>
+        <button class="copy-btn" type="button" aria-label="העתק פרומפט"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CHECKLIST ===================== -->
+  <div class="checklist" id="checklist">
+    <h2>צ'קליסט סיום</h2>
+    <p class="sub">לעשות עכשיו, על העמוד שלכם — לא בסוף השבוע</p>
+
+    <div class="check-group">1 · נגישות</div>
+    <div class="check-item"><input type="checkbox" class="box" id="c1"><label for="c1">הרצתי את פרומפט הנגישות על העמוד שלי וקיבלתי רשימת תיקונים</label></div>
+
+    <div class="check-group">2 · המסגרת המשפטית — לפני שמוסיפים כלי איסוף מידע, לא אחרי</div>
+    <div class="check-item"><input type="checkbox" class="box" id="c2"><label for="c2">יש לי טיוטת הצהרת פרטיות (מסומנת "טרם נבדקה משפטית")</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c3"><label for="c3">יש לי טיוטת תנאי שימוש (מסומנת "טרם נבדקה משפטית")</label></div>
+
+    <div class="check-group">3 · הטמעות מדידה — בתוך המסגרת שכבר קיימת, בסדר הזה</div>
+    <div class="check-item"><input type="checkbox" class="box" id="c4"><label for="c4">הרצתי בדיקת בסיס ב-PageSpeed Insights ותיקנתי ממצאים <em>לפני</em> שמוסיפים עוד סקריפטים</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c5"><label for="c5">פתחתי חשבון GTM וקיבלתי קוד קונטיינר</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c6"><label for="c6">הטמעתי את קוד ה-GTM (head + body)</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c7"><label for="c7">יצרתי נכס GA4 וחיברתי אותו כתג בתוך GTM</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c8"><label for="c8">הוספתי אירועי מדידה לפחות לכפתור CTA אחד מרכזי</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c9"><label for="c9">הטמעתי Microsoft Clarity (דרך האינטגרציה של GTM)</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c10"><label for="c10">הוספתי את העמוד ל-Google Search Console (דרך אימות ה-GTM הקיים)</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c11"><label for="c11">הרצתי בדיקת PageSpeed <strong>שנייה</strong>, לוודא שהתגים החדשים לא פגעו בציון</label></div>
+
+    <div class="check-group">4 · סגירת מעגל — עדכון ההצהרות לפי מה שבפועל הותקן</div>
+    <div class="check-item"><input type="checkbox" class="box" id="c12"><label for="c12">עדכנתי את הצהרת הפרטיות לפי מה שבפועל הותקן (טפסים / Cookies / GTM / GA4 / Clarity)</label></div>
+    <div class="check-item"><input type="checkbox" class="box" id="c13"><label for="c13">קבעתי תזכורת: לפני עלייה לאוויר בפועל — לשלוח את כל ההצהרות לעו"ד</label></div>
+  </div>
+
+  <footer>GEMS × BOOST ME · בניתי עמוד נחיתה, מה עכשיו?</footer>
+
+  </div>
+</div>
+
+<script>
+var liveRegion = document.createElement('div');
+liveRegion.setAttribute('role', 'status');
+liveRegion.setAttribute('aria-live', 'polite');
+liveRegion.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
+document.body.appendChild(liveRegion);
+
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var pre = btn.previousElementSibling;
+    var text = pre.textContent;
+    navigator.clipboard.writeText(text).then(function(){
+      btn.classList.add('copied');
+      btn.setAttribute('aria-label', 'הפרומפט הועתק');
+      var original = btn.innerHTML;
+      btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      liveRegion.textContent = 'הפרומפט הועתק ללוח';
+      setTimeout(function(){
+        btn.classList.remove('copied');
+        btn.setAttribute('aria-label', 'העתק פרומפט');
+        btn.innerHTML = original;
+      }, 1600);
+    });
+  });
+});
+
+var sections = document.querySelectorAll('.block, .checklist');
+var navLinks = document.querySelectorAll('.sidenav a');
+var observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      var id = entry.target.id;
+      navLinks.forEach(function(link){
+        link.style.background = link.getAttribute('href') === '#' + id ? 'var(--magenta-10)' : '';
+        link.style.color = link.getAttribute('href') === '#' + id ? 'var(--color-magenta)' : '';
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(function(s){ observer.observe(s); });
+</script>
+</body>
+</html>
