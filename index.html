@@ -106,6 +106,7 @@ body{
 }
 @media (max-width: 860px){
   .shell{ grid-template-columns: 1fr; }
+  .shell{ padding-top: 20px; }
 }
 
 /* ---- Sticky side nav ---- */
@@ -116,13 +117,80 @@ body{
   flex-direction: column;
   gap: 4px;
 }
+
+/* ---- Mobile: hamburger + drawer ---- */
+.nav-toggle{
+  display: none;
+}
+.nav-scrim{
+  display: none;
+}
 @media (max-width: 860px){
-  .sidenav{
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
+  .nav-toggle{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: sticky;
+    top: 12px;
+    z-index: 30;
+    margin-bottom: 16px;
+    margin-inline-start: auto;
+    background: var(--bg-card);
+    color: var(--color-dark);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
   }
+  .nav-toggle svg{ width: 18px; height: 18px; }
+
+  .sidenav{
+    position: fixed;
+    inset-inline-end: 0;
+    top: 0;
+    bottom: 0;
+    width: min(78vw, 300px);
+    background: var(--bg-card);
+    padding: 24px 18px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-elevated);
+    transform: translateX(105%);
+    transition: transform 220ms ease-out;
+    z-index: 50;
+  }
+  html[dir="rtl"] .sidenav{ transform: translateX(-105%); }
+  .sidenav.open{ transform: translateX(0); }
+
+  .nav-scrim{
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease-out;
+    z-index: 40;
+  }
+  .nav-scrim.open{ opacity: 1; pointer-events: auto; }
+
+  .nav-close{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--color-dark);
+    cursor: pointer;
+    margin-bottom: 14px;
+    margin-inline-start: auto;
+  }
+  .nav-close svg{ width: 16px; height: 16px; }
 }
 .sidenav a{
   display: flex;
@@ -469,7 +537,16 @@ footer{
 <body>
 <div class="shell">
 
-  <nav class="sidenav" aria-label="ניווט בין בלוקי ההדרכה">
+  <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="sidenav">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    ניווט
+  </button>
+  <div class="nav-scrim" id="navScrim"></div>
+
+  <nav class="sidenav" id="sidenav" aria-label="ניווט בין בלוקי ההדרכה">
+    <button class="nav-close" id="navClose" type="button" aria-label="סגור ניווט">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
     <div class="nav-label" id="navlabel-law">חוק וציות</div>
     <a href="#block-1" data-nav="1"><span class="dot" aria-hidden="true"></span>1 · נגישות</a>
     <a href="#block-2" data-nav="1"><span class="dot" aria-hidden="true"></span>2 · פרטיות</a>
@@ -850,6 +927,33 @@ document.querySelectorAll('.copy-btn').forEach(function(btn){
     });
   });
 });
+
+var navToggle = document.getElementById('navToggle');
+var navClose = document.getElementById('navClose');
+var navScrim = document.getElementById('navScrim');
+var sidenav = document.getElementById('sidenav');
+
+function openNav(){
+  sidenav.classList.add('open');
+  navScrim.classList.add('open');
+  navToggle.setAttribute('aria-expanded', 'true');
+}
+function closeNav(){
+  sidenav.classList.remove('open');
+  navScrim.classList.remove('open');
+  navToggle.setAttribute('aria-expanded', 'false');
+}
+if(navToggle){
+  navToggle.addEventListener('click', openNav);
+  navClose.addEventListener('click', closeNav);
+  navScrim.addEventListener('click', closeNav);
+  sidenav.querySelectorAll('a').forEach(function(link){
+    link.addEventListener('click', closeNav);
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeNav();
+  });
+}
 
 var sections = document.querySelectorAll('.block, .checklist');
 var navLinks = document.querySelectorAll('.sidenav a');
