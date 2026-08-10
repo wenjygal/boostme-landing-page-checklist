@@ -860,6 +860,14 @@ footer{
     <div class="topic">
       <h3>GA4 — Google Analytics 4</h3>
       <p>מראה כמה אנשים נכנסים, מאיפה הגיעו, מה עשו (גלילה, קליק, שליחת טופס), ואיפה נטשו. <strong>לא מתקינים ישירות בקוד</strong> — מתקינים כתג בתוך GTM, לשליטה מרכזית.</p>
+      <p class="soft"><strong>איך פותחים נכס (Property):</strong></p>
+      <ol>
+        <li>analytics.google.com → אייקון Admin → Create → Account (אם אין עדיין) → Property</li>
+        <li>שם הנכס + אזור זמן ומטבע — <strong>לפי מיקום בעל האתר</strong>, לא הלקוח או קהל היעד (קובע את אזור הזמן בדוחות; שינוי מאוחר יותר משפיע על חלוקת הנתונים ההיסטוריים)</li>
+        <li>פרטי עסק (תעשייה, גודל) ולפחות מטרה עסקית אחת → בוחרים פלטפורמה: Web → מזינים URL מלא (עם https://) ושם ל-Data Stream</li>
+        <li>Enhanced Measurement מומלץ להשאיר דלוק — עוקב אוטומטית אחרי גלילה, קליקים יוצאים, חיפוש באתר, הורדות</li>
+        <li>מקבלים Measurement ID (בפורמט G-XXXXXXX) — משתמשים בו בתוך GTM</li>
+      </ol>
       <p class="soft"><strong>בתוך GTM:</strong> תג חדש → "Google Analytics: GA4 Configuration" → Measurement ID מ-analytics.google.com → טריגר: All Pages.</p>
 
       <p class="soft"><strong>שלושת מושגי היסוד:</strong> <strong>Tag</strong> — הקוד שרוצים שיפעל · <strong>Trigger</strong> — מתי הוא יופעל (למשל All Pages, או קליק על כפתור) · <strong>Variable</strong> — מידע שהתג/הטריגר צריכים (Measurement ID, טקסט כפתור). תג בלי טריגר לא יופעל אף פעם.</p>
@@ -892,7 +900,13 @@ footer{
     <div class="topic">
       <h3>MS Clarity — מפות חום</h3>
       <p>כלי חינמי של מיקרוסופט שמראה <strong>איך</strong> אנשים בפועל משתמשים בעמוד — הקלטות מסך אנונימיות + מפות חום (איפה לוחצים, עד איפה גוללים, איפה "נתקעים"). משלים את GA4: GA4 אומר <em>מה</em> קרה, Clarity מראה <em>למה</em>.</p>
-      <p class="soft"><strong>הטמעה:</strong> clarity.microsoft.com → פרויקט חדש → <strong>Integrations → Google Tag Manager</strong> → מחברים חשבון GTM ועוקבים אחרי ההוראות. Clarity מטמיע את התג אוטומטית בתוך ה-GTM הקיים — לא צריך לגעת בקוד או בקלוד קוד בכלל.</p>
+      <p class="soft"><strong>איך פותחים פרויקט:</strong></p>
+      <ol>
+        <li>clarity.microsoft.com → התחברות עם חשבון Microsoft/Google → שם לפרויקט + כתובת האתר → Add new project</li>
+        <li>בתוך הפרויקט: <strong>Settings → Setup → Google Tag Manager → Finish setup</strong> — מתחברים עם חשבון Google</li>
+        <li>בוחרים את חשבון ה-GTM ואת הקונטיינר הרלוונטי מהרשימה → Create and publish</li>
+        <li>Clarity מטמיע את התג אוטומטית בתוך ה-GTM הקיים ומפרסם — לא צריך לגעת בקוד או בקלוד קוד בכלל</li>
+      </ol>
 
       <p class="soft">💡 <strong>טיפ — מה לחפש במפת החום:</strong> אם רואים הרבה לחיצות במקום שהם <em>לא</em> אמורים ללחוץ (אלמנט שנראה ככפתור אבל לא, טקסט שמושך קליקים בלי סיבה) — זה סימן שה-UI לא ברור, לא רעש רקע להתעלם ממנו.</p>
 
