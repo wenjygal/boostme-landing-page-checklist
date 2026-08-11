@@ -18,7 +18,7 @@
   --bg-page:       #F5F5F7;
   --bg-card:       #FFFFFF;
   --color-dark:    #1A1A1A;
-  --fg-secondary:  rgba(26,26,26,0.60);
+  --fg-secondary:  rgba(26,26,26,0.64);
 
   --gradient-brand:    linear-gradient(135deg, #E0128B 0%, #F68920 100%);
   --gradient-brand-90: linear-gradient(90deg, #E0128B 0%, #F68920 100%);
@@ -26,6 +26,12 @@
   --magenta-10: rgba(224,18,139,0.10);
   --magenta-15: rgba(224,18,139,0.15);
   --magenta-20: rgba(224,18,139,0.20);
+
+  --pill-magenta-ink: #C41077;
+  --pill-orange-bg: rgba(246,137,32,0.16);
+  --pill-orange-ink: #8f4c0d;
+  --icon-wa: #12753a;
+  --block-num-orange: #b85f0d;
 
   --shadow-card:     0 2px 12px rgba(0,0,0,0.08);
   --shadow-hover:    0 6px 24px rgba(224,18,139,0.15);
@@ -56,6 +62,10 @@
   --magenta-10: rgba(224,18,139,0.16);
   --magenta-15: rgba(224,18,139,0.22);
   --magenta-20: rgba(224,18,139,0.28);
+  --pill-magenta-ink: #ff5cb8;
+  --pill-orange-bg: rgba(246,137,32,0.22);
+  --pill-orange-ink: #ffb066;
+  --icon-wa: #25D366;
   --shadow-card:     0 2px 12px rgba(0,0,0,0.35);
   --shadow-hover:    0 6px 24px rgba(224,18,139,0.28);
   --code-bg: #0f0d12;
@@ -75,6 +85,10 @@
     --magenta-10: rgba(224,18,139,0.16);
     --magenta-15: rgba(224,18,139,0.22);
     --magenta-20: rgba(224,18,139,0.28);
+    --pill-magenta-ink: #ff5cb8;
+    --pill-orange-bg: rgba(246,137,32,0.22);
+    --pill-orange-ink: #ffb066;
+    --icon-wa: #25D366;
     --shadow-card:     0 2px 12px rgba(0,0,0,0.35);
     --shadow-hover:    0 6px 24px rgba(224,18,139,0.28);
     --code-bg: #0f0d12;
@@ -299,7 +313,7 @@ body{
 .eyebrow{
   font-size: 12px;
   letter-spacing: .12em;
-  color: var(--color-magenta);
+  color: var(--pill-magenta-ink);
   text-transform: uppercase;
   font-weight: 700;
 }
@@ -356,14 +370,14 @@ h1{
   font-size: 20px;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.35);
-  background: var(--gradient-brand);
+  background: linear-gradient(135deg, var(--color-magenta) 0%, var(--block-num-orange) 100%);
   width: 42px; height: 42px;
   border-radius: 50%;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0;
   box-shadow: var(--shadow-card);
 }
-.block.measure .block-num{ background: linear-gradient(135deg, var(--color-orange), var(--color-magenta)); }
+.block.measure .block-num{ background: linear-gradient(135deg, var(--block-num-orange), var(--color-magenta)); }
 .block-title{
   font-size: 24px;
   font-weight: 700;
@@ -394,10 +408,10 @@ h1{
   padding: 4px 11px;
   border-radius: var(--radius-pill);
   background: var(--magenta-10);
-  color: var(--color-magenta);
+  color: var(--pill-magenta-ink);
   letter-spacing: .04em;
 }
-.block.measure .topic h3 .pill{ background: rgba(246,137,32,0.14); color: var(--color-orange); }
+.block.measure .topic h3 .pill{ background: var(--pill-orange-bg); color: var(--pill-orange-ink); }
 .topic p{ margin: 8px 0; color: var(--color-dark); }
 .topic p.soft{ color: var(--fg-secondary); font-size: 14.5px; }
 
@@ -527,7 +541,11 @@ pre.prompt{
 }
 .sidenav a:focus-visible,
 .toollinks a:focus-visible,
-.copy-btn:focus-visible{
+.copy-btn:focus-visible,
+.nav-toggle:focus-visible,
+.nav-close:focus-visible,
+.reset-btn:focus-visible,
+.footer-wa:focus-visible{
   outline: 2px solid var(--color-magenta);
   outline-offset: 2px;
 }
@@ -560,7 +578,7 @@ footer{
 }
 .footer-wa{
   display: inline-flex;
-  color: #25D366;
+  color: var(--icon-wa);
   transition: opacity 150ms ease-out;
 }
 .footer-wa:hover{ opacity: .7; }
@@ -1038,15 +1056,24 @@ var navClose = document.getElementById('navClose');
 var navScrim = document.getElementById('navScrim');
 var sidenav = document.getElementById('sidenav');
 
+function getFocusable(container){
+  return Array.prototype.slice.call(
+    container.querySelectorAll('a[href], button:not([disabled])')
+  ).filter(function(el){ return el.offsetParent !== null; });
+}
+
 function openNav(){
   sidenav.classList.add('open');
   navScrim.classList.add('open');
   navToggle.setAttribute('aria-expanded', 'true');
+  navClose.focus();
 }
 function closeNav(){
+  var wasOpen = sidenav.classList.contains('open');
   sidenav.classList.remove('open');
   navScrim.classList.remove('open');
   navToggle.setAttribute('aria-expanded', 'false');
+  if(wasOpen) navToggle.focus();
 }
 if(navToggle){
   navToggle.addEventListener('click', openNav);
@@ -1056,7 +1083,24 @@ if(navToggle){
     link.addEventListener('click', closeNav);
   });
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') closeNav();
+    if(!sidenav.classList.contains('open')) return;
+    if(e.key === 'Escape'){
+      closeNav();
+      return;
+    }
+    if(e.key === 'Tab'){
+      var focusable = getFocusable(sidenav);
+      if(focusable.length === 0) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if(e.shiftKey && document.activeElement === first){
+        e.preventDefault();
+        last.focus();
+      } else if(!e.shiftKey && document.activeElement === last){
+        e.preventDefault();
+        first.focus();
+      }
+    }
   });
 }
 
