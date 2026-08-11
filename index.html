@@ -572,6 +572,13 @@ footer{
   color: var(--fg-secondary);
   font-size: 13px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.footer-top{
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -583,6 +590,104 @@ footer{
 }
 .footer-wa:hover{ opacity: .7; }
 .footer-wa svg{ width: 18px; height: 18px; }
+
+/* ---- Footer legal links ---- */
+.footer-legal{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 10px;
+  font-size: 12px;
+}
+.footer-legal button{
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--fg-secondary);
+  background: none;
+  border: none;
+  padding: 2px 2px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 150ms ease-out;
+}
+.footer-legal button:hover{ color: var(--color-magenta); }
+.footer-legal .dot-sep{
+  color: var(--fg-secondary);
+  opacity: .5;
+  font-size: 11px;
+}
+
+/* ---- Legal modals ---- */
+.modal-scrim{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+.modal-scrim.open{ opacity: 1; pointer-events: auto; }
+.modal-dialog{
+  background: var(--bg-card);
+  color: var(--color-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+  padding: 30px 28px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: translateY(12px);
+  transition: transform 180ms ease-out;
+}
+.modal-scrim.open .modal-dialog{ transform: translateY(0); }
+.modal-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.modal-head h2{
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+.modal-close{
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--color-dark);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 150ms ease-out, color 150ms ease-out;
+}
+.modal-close:hover{ background: var(--magenta-10); color: var(--color-magenta); }
+.modal-close svg{ width: 16px; height: 16px; }
+.modal-body{ font-size: 14.5px; line-height: 1.75; }
+.modal-body p{ margin: 0 0 12px; }
+.modal-body ul{ margin: 0 0 12px; padding-inline-start: 20px; }
+.modal-body li{ margin-bottom: 5px; }
+.modal-body strong{ font-weight: 700; }
+.modal-body .modal-updated{
+  color: var(--fg-secondary);
+  font-size: 12.5px;
+  margin-top: 18px;
+  margin-bottom: 0;
+}
+.modal-close:focus-visible{
+  outline: 2px solid var(--color-magenta);
+  outline-offset: 2px;
+}
 
 @media print{
   body{ background: white; }
@@ -1016,12 +1121,96 @@ Core Web Vitals (LCP, CLS, INP) — תסביר לי לכל תיקון למה
   </div>
 
   <footer>
-    GEMS × BOOST ME · בניתי עמוד נחיתה, מה עכשיו?
-    <a href="https://wa.me/972545538883" target="_blank" rel="noopener" class="footer-wa" aria-label="דברו איתנו בוואטסאפ, נפתח בכרטיסייה חדשה">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.76.46 3.48 1.35 5L2 22l5.14-1.35a9.96 9.96 0 0 0 4.9 1.28h.01c5.52 0 10-4.48 10-10s-4.48-9.93-10.01-9.93zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.05.8.81-2.97-.2-.3a8.18 8.18 0 0 1-1.26-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.86 5.8 2.4a8.14 8.14 0 0 1 2.4 5.8c0 4.52-3.68 8.15-8.21 8.15zm4.5-6.13c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.79.96-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.22-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42-.14 0-.31-.02-.47-.02s-.43.06-.66.31c-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.2 3.7.59.25 1.05.4 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
-    </a>
+    <div class="footer-top">
+      GEMS × BOOST ME · בניתי עמוד נחיתה, מה עכשיו?
+      <a href="https://wa.me/972545538883" target="_blank" rel="noopener" class="footer-wa" aria-label="דברו איתנו בוואטסאפ, נפתח בכרטיסייה חדשה">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.76.46 3.48 1.35 5L2 22l5.14-1.35a9.96 9.96 0 0 0 4.9 1.28h.01c5.52 0 10-4.48 10-10s-4.48-9.93-10.01-9.93zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.05.8.81-2.97-.2-.3a8.18 8.18 0 0 1-1.26-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.86 5.8 2.4a8.14 8.14 0 0 1 2.4 5.8c0 4.52-3.68 8.15-8.21 8.15zm4.5-6.13c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.79.96-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.22-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42-.14 0-.31-.02-.47-.02s-.43.06-.66.31c-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.2 3.7.59.25 1.05.4 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+      </a>
+    </div>
+    <div class="footer-legal">
+      <button type="button" id="openA11yModal" aria-haspopup="dialog">הצהרת נגישות</button>
+      <span class="dot-sep" aria-hidden="true">·</span>
+      <button type="button" id="openPrivacyModal" aria-haspopup="dialog">מדיניות פרטיות</button>
+      <span class="dot-sep" aria-hidden="true">·</span>
+      <button type="button" id="openTermsModal" aria-haspopup="dialog">תנאי שימוש</button>
+    </div>
   </footer>
 
+  </div>
+</div>
+
+<!-- ===================== LEGAL MODALS ===================== -->
+<div class="modal-scrim" id="a11yModal" data-modal>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="a11yModalTitle" tabindex="-1">
+    <div class="modal-head">
+      <h2 id="a11yModalTitle">הצהרת נגישות</h2>
+      <button type="button" class="modal-close" data-modal-close aria-label="סגירת הצהרת נגישות">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>הכלי הזה — "בניתי עמוד נחיתה, מה עכשיו?" — פועל להנגשה לכלל המשתמשים, לרבות אנשים עם מוגבלות, בהתאם לחוק שוויון זכויות לאנשים עם מוגבלות, התשנ"ח-1998, ולתקן הישראלי ת"י 5568.</p>
+
+      <p><strong>רמת הנגישות:</strong> הדף תוכנן ונבדק בהתאמה לרמה AA, המבוססת על הנחיות WCAG 2.1 הבינלאומיות. ההתאמות כוללות: ניגודיות צבעים תקנית בין טקסט לרקע, ניווט מלא באמצעות מקלדת (כולל תפריט הנייד והחלונות הקופצים האלו), מסגרת מיקוד (focus) ברורה, תוויות ARIA לכפתורים וקישורים, וסימון אלמנטים דקורטיביים כך שלא יפריעו לקוראי מסך.</p>
+
+      <p><strong>אופי הדף:</strong> זהו דף checklist סטטי — אין בו טפסים, אין הרשמה, ואין קוד מעקב/אנליטיקס הפועל על הדף עצמו. הסימונים (checkboxes) שמסמנים משתמשים הם אינטראקציה מקומית בלבד בדפדפן.</p>
+
+      <p><strong>פניות והנגשה חסרה:</strong> נתקלתם בבעיית נגישות בדף? נשמח שתפנו אלינו ונטפל בהקדם.</p>
+
+      <p><strong>רכזת נגישות:</strong> גל, מייל: <a href="mailto:meimagineai@gmail.com">meimagineai@gmail.com</a></p>
+
+      <p class="modal-updated">עודכן לאחרונה: 11/08/2026</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-scrim" id="privacyModal" data-modal>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" tabindex="-1">
+    <div class="modal-head">
+      <h2 id="privacyModalTitle">מדיניות פרטיות</h2>
+      <button type="button" class="modal-close" data-modal-close aria-label="סגירת מדיניות פרטיות">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>הכלי הזה לא אוסף שום מידע אישי. אין בו טפסים, אין הרשמה, ואין קוד מעקב או אנליטיקס (GTM / GA4 / Clarity) מותקן על הדף עצמו. כל האזכורים של כלי מדידה בתוכן הדף הם חומר לימודי — הדרכה איך להטמיע אותם באתר שלכם, לא משהו שפועל כאן.</p>
+
+      <p><strong>סימוני ה-checklist:</strong> הסימונים (checkboxes) שמסמנים בדף נשמרים מקומית בדפדפן שלכם בלבד (או לא נשמרים כלל בין טעינות, תלוי במכשיר), ולא נשלחים לשום שרת ולא נצפים על ידינו.</p>
+
+      <p><strong>קישור לוואטסאפ:</strong> בפוטר יש קישור יוצא ל-WhatsApp. לחיצה עליו פותחת שיחה חיצונית באפליקציית/אתר WhatsApp — שם חלה מדיניות הפרטיות של WhatsApp/Meta, לא שלנו. אנחנו לא אוספים דרך הקישור הזה שום מידע.</p>
+
+      <p><strong>עלות:</strong> הכלי חינמי לגמרי לשימוש.</p>
+
+      <p><strong>יצירת קשר בנושאי פרטיות:</strong> <a href="mailto:meimagineai@gmail.com">meimagineai@gmail.com</a></p>
+
+      <p class="modal-updated">עודכן לאחרונה: 11/08/2026</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-scrim" id="termsModal" data-modal>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle" tabindex="-1">
+    <div class="modal-head">
+      <h2 id="termsModalTitle">תנאי שימוש</h2>
+      <button type="button" class="modal-close" data-modal-close aria-label="סגירת תנאי שימוש">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>הכלי הזה — "בניתי עמוד נחיתה, מה עכשיו?" — פתוח לשימוש חופשי ואישי, ללא כל תשלום. ניתן לשתף את הקישור אליו הלאה בשמחה.</p>
+
+      <p>ניתן לעשות שימוש מלא בכל מה שמופק מהשימוש בכלי (למשל, הפרומפטים המוכנים או הצ'קליסט המסומן). עם זאת, אין למכור גישה לכלי עצמו, ואין להציע אותו כשירות בתשלום.</p>
+
+      <p>הכלי ניתן כפי שהוא (AS IS), ללא הבטחה לתפקוד מושלם או לזמינות רציפה. התוכן בו — כולל הפניות לחוק ולתקנות — הוא כיוון מעשי ופרקטי ולא ייעוץ משפטי, ועלול להכיל אי-דיוקים. האחריות על כל שימוש או החלטה הנשענים על הכלי חלה על המשתמש בלבד.</p>
+
+      <p>אנחנו לא נושאים באחריות לכל נזק, ישיר או עקיף, שייגרם כתוצאה מהשימוש בכלי.</p>
+
+      <p>אנחנו שומרים לעצמנו את הזכות לשנות את הכלי או להפסיק את השירות בכל עת וללא הודעה מוקדמת.</p>
+
+      <p><strong>יצירת קשר:</strong> <a href="mailto:meimagineai@gmail.com">meimagineai@gmail.com</a></p>
+
+      <p class="modal-updated">עודכן לאחרונה: 11/08/2026</p>
+    </div>
   </div>
 </div>
 
@@ -1112,6 +1301,68 @@ if(resetBtn){
     });
   });
 }
+
+/* ---- Legal modals (accessibility / privacy / terms) ---- */
+var openModalEl = null;
+var modalTrigger = null;
+
+function trapTab(container, e){
+  var focusable = getFocusable(container);
+  if(focusable.length === 0) return;
+  var first = focusable[0];
+  var last = focusable[focusable.length - 1];
+  if(e.shiftKey && document.activeElement === first){
+    e.preventDefault();
+    last.focus();
+  } else if(!e.shiftKey && document.activeElement === last){
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function openModal(modal, trigger){
+  openModalEl = modal;
+  modalTrigger = trigger || document.activeElement;
+  modal.classList.add('open');
+  var dialog = modal.querySelector('.modal-dialog');
+  dialog.focus();
+}
+function closeModal(){
+  if(!openModalEl) return;
+  openModalEl.classList.remove('open');
+  openModalEl = null;
+  if(modalTrigger) modalTrigger.focus();
+  modalTrigger = null;
+}
+
+document.querySelectorAll('[data-modal]').forEach(function(modal){
+  var dialog = modal.querySelector('.modal-dialog');
+  modal.addEventListener('click', function(e){
+    if(e.target === modal) closeModal();
+  });
+  dialog.querySelector('[data-modal-close]').addEventListener('click', closeModal);
+});
+
+document.getElementById('openA11yModal').addEventListener('click', function(){
+  openModal(document.getElementById('a11yModal'), this);
+});
+document.getElementById('openPrivacyModal').addEventListener('click', function(){
+  openModal(document.getElementById('privacyModal'), this);
+});
+document.getElementById('openTermsModal').addEventListener('click', function(){
+  openModal(document.getElementById('termsModal'), this);
+});
+
+document.addEventListener('keydown', function(e){
+  if(!openModalEl) return;
+  if(e.key === 'Escape'){
+    closeModal();
+    return;
+  }
+  if(e.key === 'Tab'){
+    trapTab(openModalEl, e);
+  }
+});
 
 var sections = document.querySelectorAll('.block, .checklist');
 var navLinks = document.querySelectorAll('.sidenav a');
