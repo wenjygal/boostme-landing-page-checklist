@@ -553,7 +553,18 @@ footer{
   border-top: 1px solid var(--line);
   color: var(--fg-secondary);
   font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
+.footer-wa{
+  display: inline-flex;
+  color: #25D366;
+  transition: opacity 150ms ease-out;
+}
+.footer-wa:hover{ opacity: .7; }
+.footer-wa svg{ width: 18px; height: 18px; }
 
 @media print{
   body{ background: white; }
@@ -986,7 +997,12 @@ Core Web Vitals (LCP, CLS, INP) — תסביר לי לכל תיקון למה
     <div class="check-item"><input type="checkbox" class="box" id="c13"><label for="c13">קבעתי תזכורת: לפני עלייה לאוויר בפועל — לשלוח את כל ההצהרות לעו"ד</label></div>
   </div>
 
-  <footer>GEMS × BOOST ME · בניתי עמוד נחיתה, מה עכשיו?</footer>
+  <footer>
+    GEMS × BOOST ME · בניתי עמוד נחיתה, מה עכשיו?
+    <a href="https://wa.me/972545538883" target="_blank" rel="noopener" class="footer-wa" aria-label="דברו איתנו בוואטסאפ, נפתח בכרטיסייה חדשה">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.76.46 3.48 1.35 5L2 22l5.14-1.35a9.96 9.96 0 0 0 4.9 1.28h.01c5.52 0 10-4.48 10-10s-4.48-9.93-10.01-9.93zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.05.8.81-2.97-.2-.3a8.18 8.18 0 0 1-1.26-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.86 5.8 2.4a8.14 8.14 0 0 1 2.4 5.8c0 4.52-3.68 8.15-8.21 8.15zm4.5-6.13c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.79.96-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.22-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42-.14 0-.31-.02-.47-.02s-.43.06-.66.31c-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.2 3.7.59.25 1.05.4 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+    </a>
+  </footer>
 
   </div>
 </div>
